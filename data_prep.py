@@ -56,7 +56,7 @@ for index, row in df.iterrows():
     metadata_val = ", ".join(final_list) if final_list else None
 
     veri_objesi = {
-        index: f"data_{index}",
+        "index": f"row_{index}",
         "question": row['soru'],
         "answer": row['cevap'],
         "metadata": {
