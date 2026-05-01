@@ -45,7 +45,6 @@ for index, row in df.iterrows():
     set_birlesik = set()
     for kaynak in [m_soru, m_cevap]:
         if kaynak is not None:
-            # Virgülle ayrılmış maddeleri tek tek listeye ekle
             set_birlesik.update([item.strip() for item in kaynak.split(',')])
     
     final_list = list(set_birlesik)
@@ -57,6 +56,7 @@ for index, row in df.iterrows():
     metadata_val = ", ".join(final_list) if final_list else None
 
     veri_objesi = {
+        index: f"data_{index}",
         "question": row['soru'],
         "answer": row['cevap'],
         "metadata": {
