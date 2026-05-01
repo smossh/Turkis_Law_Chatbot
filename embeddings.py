@@ -6,19 +6,25 @@ import json
 embeddings=HuggingFaceEmbeddings(
     model_name="intfloat/multilingual-e5-base" )
 
-with open("data.json", "r") as f:
-    data = json.load(f)
-
-
-preprocessed_data = [f"passage: {text}" for text in data]
-
-vector_embeddings = embeddings.embed_documents(preprocessed_data)
+data = []
+with open("data.jsonl", "r", encoding="utf-8") as f:
+    for i, line in enumerate(f, 1):
+        line = line.strip()
+        if not line:
+            continue  
+        try:
+            data.append(json.loads(line))
+        except json.JSONDecodeError as e:
+            print(f"Hata! {i}. satır okunamadı. İçerik: {line[:50]}...")
+            print(f"Hata detayı: {e}")
 
 docs = [
     Document(
-        page_content=f"Soru: {item['question']}\nCevap: {item['answer']}",
+        
+        page_content=f"passage: Soru: {item['question']}\nCevap: {item['answer']}",
         metadata= {
-        "madde": item['metadata']['madde']
+            "idx": item.get("index"),
+            "madde": item.get("metadata", {}).get("Madde", None)
         }
     )
     for item in data
@@ -31,4 +37,4 @@ vectorstore= Chroma.from_documents(
     persist_directory=persist_directory,
     collection_name="rag_collection"
 )
-print(f"Vectorstore created with {len(vector_embeddings)} embeddings.")
+print(f"Vectorstore created with {len(vectorstore._collection.documents)} embeddings.")
